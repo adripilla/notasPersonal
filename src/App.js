@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import ListItem from './components/ListItem';
 
-function App() {
+const App = () => {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    // Obtener la lista de elementos desde la API al cargar el componente
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get('https://puffy-tree-balloon.glitch.me/whatsapp/mensajes');
+        setItems(response.data);
+      } catch (error) {
+        console.error('Error al obtener los elementos:', error);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
+  const handleDelete = (itemId) => {
+    // Actualizar la lista de elementos después de eliminar uno
+    setItems(items.filter(item => item._id !== itemId));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Lista de Elementos</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {items.map(item => {
+          return (
+            <ListItem key={item._id} item={item} onDelete={handleDelete} />
+          );
+        })}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
